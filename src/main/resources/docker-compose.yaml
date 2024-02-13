@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  webhookDb:
+    image: mongo:latest
+    restart: always
+    container_name: "webhook"
+    command:
+      - mongodb --port 27011
+    volumes:
+      - mongodb-data:/data/webhook/
+  webhook-manager:
+    image: webhook-manager
+    container_name: "webhook-manager"
+    restart: always
+    ports:
+      - "8085:8027"
+    links:
+      - webhookDb
