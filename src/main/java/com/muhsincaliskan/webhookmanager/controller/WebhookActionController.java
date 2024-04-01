@@ -15,15 +15,15 @@ public class WebhookActionController {
         this.webhookActionService = webhookActionService;
     }
     @PostMapping(value = "/sendWebhookMessage")
-    public ResponseEntity<Void> sendWebhookMessage(@RequestParam String id) {
+    public ResponseEntity<String> sendWebhookMessage(@RequestParam String id) {
         webhookActionService.sendWebhookMessage(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Webhook message sent successfully");
     }
 
     @PostMapping(value = "/sendWebhookMessageDirectly")
-    public ResponseEntity<Void> sendWebhookMessageDirectly(@RequestBody WebhookEntity webhookEntity) {
+    public ResponseEntity<String> sendWebhookMessageDirectly(@RequestBody WebhookEntity webhookEntity) {
         webhookActionService.sendDiscordWebhookMessage(webhookEntity);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Webhook message sent successfully");
     }
 
 }
