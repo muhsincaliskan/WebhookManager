@@ -1,5 +1,5 @@
 FROM gradle:8.2.1-jdk17 AS TEMP_BUILD_IMAGE
-ENV APP_HOME=/usr/exchangeoffice/
+ENV APP_HOME=/usr/webhook-manager/
 WORKDIR $APP_HOME
 COPY build.gradle settings.gradle $APP_HOME
 COPY gradle $APP_HOME/gradle
@@ -9,7 +9,7 @@ RUN chown -R gradle /home/gradle/src
 
 RUN gradle build || return 0
 COPY . .
-##RUN gradle clean build
+RUN gradle clean build
 
 FROM amazoncorretto:17
 
