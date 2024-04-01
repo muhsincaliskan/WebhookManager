@@ -13,16 +13,19 @@ import java.util.Optional;
 @RequestMapping(value = "/sponge/api/v1/webhook")
 public class WebhookCrudController {
 
+    private final WebhookCrudService webhookCrudService;
     @Autowired
-    WebhookCrudService webhookCrudService;
+    WebhookCrudController(WebhookCrudService webhookCrudService) {
+        this.webhookCrudService = webhookCrudService;
+    }
 
-    @PostMapping(value = "/addWebhook")
+    @PostMapping(value = "/add")
     public ResponseEntity<WebhookEntity> addWebhook(@RequestBody WebhookEntity webhookEntity) {
         return ResponseEntity.ok(webhookCrudService.addWebhook(webhookEntity));
     }
 
-    @GetMapping(value = "/getWebhookList")
-    public ResponseEntity<List<WebhookEntity>> getWebhookList() {
+    @GetMapping(value = "/getAllWebhooks")
+    public ResponseEntity<List<WebhookEntity>> getAllWebhooks() {
         return Optional.of(webhookCrudService.getAllWebhooks())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.noContent().build());
