@@ -16,16 +16,22 @@ import java.util.List;
 @Slf4j
 @EnableAsync
 public class SchedulerService {
-    @Autowired
-    private WebhookActionService webhookActionService;
+    private final WebhookActionService webhookActionService;
 
-    @Autowired
-    private WebhookCrudService webhookCrudService;
+    private final WebhookCrudService webhookCrudService;
+
 
     private static final int DEFAULT_REPEAT_FREQUENCY = 1;
+
+    @Autowired
+    public SchedulerService(WebhookActionService webhookActionService, WebhookCrudService webhookCrudService) {
+        this.webhookActionService = webhookActionService;
+        this.webhookCrudService = webhookCrudService;
+    }
+
     @Async
     @Scheduled(fixedRate = 10000)
-    public void handleScheduledWebhooks() {
+    public synchronized void handleScheduledWebhooks() {
         log.info("Checking for expired webhooks");
         LocalDateTime today = LocalDateTime.now();
         List<WebhookEntity> webhooks = webhookCrudService.findAllExpiredWebhooks(today);
@@ -34,7 +40,7 @@ public class SchedulerService {
             String id = webhook.getId();
             try {
                 if (webhook.getScheduleInfo().isRepeatable()) {
-                    handleReccuringWebhook(webhook);
+                    handleRecurringWebhook(webhook);
                 } else {
                     webhookActionService.sendWebhookMessage(id);
                     webhookCrudService.deleteWebhookById(id);
@@ -46,7 +52,7 @@ public class SchedulerService {
         });
     }
 
-    private void handleReccuringWebhook(WebhookEntity webhook) {
+    private void handleRecurringWebhook(WebhookEntity webhook) {
         log.info("Handling recurring webhook: " + webhook.getWebhookName());
         String id = String.valueOf(webhook.get_id());
 
